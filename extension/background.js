@@ -1,16 +1,16 @@
-chrome.browserAction.onClicked.addListener(function(tab) {
+chrome.browserAction.onClicked.addListener(function (tab) {
   save(tab);
 });
 
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(function () {
   chrome.contextMenus.create({
     contexts: ['all'],
     id: 'save',
-    title: 'Save as .mht...'
+    title: 'Save as .mht...',
   });
 });
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
   if (info.menuItemId == 'save') {
     save(tab);
   }
@@ -22,7 +22,7 @@ async function save(tab) {
   download(filename, await patchSubject(blob));
 
   function sanitize(filename) {
-    return filename.replace(/[<>:"/\\|?*\x00-\x1F]/g, '');
+    return filename.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_');
   }
 
   function download(filename, blob) {
@@ -30,7 +30,7 @@ async function save(tab) {
       conflictAction: 'prompt',
       filename: filename,
       saveAs: true,
-      url: URL.createObjectURL(blob)
+      url: URL.createObjectURL(blob),
     });
   }
 
@@ -41,12 +41,12 @@ async function save(tab) {
   }
 
   function readBlobAsync(blob) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       const fr = new FileReader();
-      fr.onerror = function() {
+      fr.onerror = function () {
         reject(fr.error);
       };
-      fr.onload = function() {
+      fr.onload = function () {
         resolve(fr.result);
       };
       fr.readAsText(blob);
@@ -62,16 +62,16 @@ async function run() {
       chrome.browserAction.setBadgeText({ tabId: tab.id, text: 'info' });
 
       const fileEnabled = await toPromise(chrome.permissions.contains, {
-        origins: ['file:///*']
+        origins: ['file:///*'],
       });
       chrome.browserAction.setPopup({
         tabId: tab.id,
-        popup: fileEnabled ? 'info.html' : 'filePermission.html'
+        popup: fileEnabled ? 'info.html' : 'filePermission.html',
       });
     }
   }
 
-  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (changeInfo.status == 'loading') {
       setPopup(tab);
     }

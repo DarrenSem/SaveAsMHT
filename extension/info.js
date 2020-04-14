@@ -5,26 +5,26 @@ const urlLink = document.getElementById('url');
 const model = {};
 Object.defineProperties(model, {
   date: {
-    set: value => {
+    set: (value) => {
       dateSpan.textContent = value;
-    }
+    },
   },
   span: {
-    set: value => {
+    set: (value) => {
       spanElement.textContent = value;
-    }
+    },
   },
   urlHref: {
-    set: value => {
+    set: (value) => {
       urlLink.href = value;
       urlLink.title = value;
-    }
+    },
   },
   urlText: {
-    set: value => {
+    set: (value) => {
       urlLink.textContent = value;
-    }
-  }
+    },
+  },
 });
 
 run();
@@ -32,7 +32,7 @@ run();
 async function run() {
   const tabs = await toPromise(chrome.tabs.query, {
     currentWindow: true,
-    active: true
+    active: true,
   });
   if (!(tabs && tabs.length)) {
     return;
@@ -48,12 +48,12 @@ async function run() {
   model.span = spanToString(Date.now() - then);
 
   function load(url) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       const xr = new XMLHttpRequest();
-      xr.onerror = function() {
+      xr.onerror = function () {
         reject(xr.error);
       };
-      xr.onload = function() {
+      xr.onload = function () {
         resolve(xr.responseText);
       };
       xr.open('GET', url);
