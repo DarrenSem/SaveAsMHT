@@ -37,7 +37,7 @@ async function save(tab) {
   async function patchSubject(blob) {
     let mht = await readBlobAsync(blob);
     mht = mht.replace(/^(Subject: )(.*)$/m, `$1${tab.title}`);
-    return new Blob([mht]);
+    return new Blob([mht], { type: 'multipart/related' });
   }
 
   function readBlobAsync(blob) {

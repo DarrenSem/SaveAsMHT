@@ -57,7 +57,7 @@ async function run() {
         resolve(xr.responseText);
       };
       xr.open('GET', url);
-      xr.setRequestHeader('Range', 'bytes=0-1024');
+      xr.setRequestHeader('Range', 'bytes=0-4096');
       xr.send();
     });
   }
