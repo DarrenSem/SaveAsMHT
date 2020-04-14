@@ -22,7 +22,7 @@ async function save(tab) {
   download(filename, await patchSubject(blob));
 
   function sanitize(filename) {
-    return filename.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_');
+    return filename.replace(/[<>:"/\\|?*\x00-\x1F~]/g, '-');
   }
 
   function download(filename, blob) {
