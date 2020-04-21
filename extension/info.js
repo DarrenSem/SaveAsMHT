@@ -27,8 +27,6 @@ Object.defineProperties(model, {
   },
 });
 
-run();
-
 async function run() {
   const tabs = await toPromise(chrome.tabs.query, {
     currentWindow: true,
@@ -37,6 +35,7 @@ async function run() {
   if (!(tabs && tabs.length)) {
     return;
   }
+
   const tab = tabs[0];
   const text = await load(tab.url);
 
@@ -89,3 +88,5 @@ async function run() {
     return val.join(', ');
   }
 }
+
+run();

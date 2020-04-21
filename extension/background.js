@@ -1,21 +1,3 @@
-chrome.browserAction.onClicked.addListener(function (tab) {
-  save(tab);
-});
-
-chrome.runtime.onInstalled.addListener(function () {
-  chrome.contextMenus.create({
-    contexts: ['all'],
-    id: 'save',
-    title: 'Save as .mht...',
-  });
-});
-
-chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  if (info.menuItemId == 'save') {
-    save(tab);
-  }
-});
-
 async function save(tab) {
   const filename = `${sanitize(tab.title)}.mht`;
   let blob = await toPromise(chrome.pageCapture.saveAsMHTML, { tabId: tab.id });
@@ -35,12 +17,12 @@ async function save(tab) {
   }
 
   async function patchSubject(blob) {
-    let mht = await readBlobAsync(blob);
+    let mht = await readBlob(blob);
     mht = mht.replace(/^(Subject: )(.*)$/m, `$1${tab.title}`);
     return new Blob([mht], { type: 'multipart/related' });
   }
 
-  function readBlobAsync(blob) {
+  function readBlob(blob) {
     return new Promise(function (resolve, reject) {
       const fr = new FileReader();
       fr.onerror = function () {
@@ -54,7 +36,23 @@ async function save(tab) {
   }
 }
 
-run();
+chrome.browserAction.onClicked.addListener(function (tab) {
+  save(tab);
+});
+
+chrome.runtime.onInstalled.addListener(function () {
+  chrome.contextMenus.create({
+    contexts: ['all'],
+    id: 'save',
+    title: 'Save as .mht...',
+  });
+});
+
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+  if (info.menuItemId == 'save') {
+    save(tab);
+  }
+});
 
 async function run() {
   async function setPopup(tab) {
@@ -82,3 +80,5 @@ async function run() {
     setPopup(tab);
   }
 }
+
+run();
