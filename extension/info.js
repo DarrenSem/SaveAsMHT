@@ -1,92 +1,92 @@
-const dateSpan = document.getElementById('date');
-const spanElement = document.getElementById('span');
-const urlLink = document.getElementById('url');
+const dateSpan = document.getElementById('date')
+const spanElement = document.getElementById('span')
+const urlLink = document.getElementById('url')
 
-const model = {};
+const model = {}
 Object.defineProperties(model, {
   date: {
     set: (value) => {
-      dateSpan.textContent = value;
+      dateSpan.textContent = value
     },
   },
   span: {
     set: (value) => {
-      spanElement.textContent = value;
+      spanElement.textContent = value
     },
   },
   urlHref: {
     set: (value) => {
-      urlLink.href = value;
-      urlLink.title = value;
+      urlLink.href = value
+      urlLink.title = value
     },
   },
   urlText: {
     set: (value) => {
-      urlLink.textContent = value;
+      urlLink.textContent = value
     },
   },
-});
+})
 
 async function run() {
   const tabs = await toPromise(chrome.tabs.query, {
     currentWindow: true,
     active: true,
-  });
+  })
   if (!(tabs && tabs.length)) {
-    return;
+    return
   }
 
-  const tab = tabs[0];
-  const text = await load(tab.url);
+  const tab = tabs[0]
+  const text = await load(tab.url)
 
-  model.urlHref = text.match(/^Content-Location: (.*)$/m)[1];
-  model.urlText = text.match(/^Subject: (.*)$/m)[1];
+  model.urlHref = text.match(/^Content-Location: (.*)$/m)[1]
+  model.urlText = text.match(/^Subject: (.*)$/m)[1]
 
-  const then = new Date(text.match(/^Date: (.*)$/m)[1]);
-  model.date = then.toLocaleString();
-  model.span = spanToString(Date.now() - then);
+  const then = new Date(text.match(/^Date: (.*)$/m)[1])
+  model.date = then.toLocaleString()
+  model.span = spanToString(Date.now() - then)
 
   function load(url) {
     return new Promise(function (resolve, reject) {
-      const xr = new XMLHttpRequest();
+      const xr = new XMLHttpRequest()
       xr.onerror = function () {
-        reject(xr.error);
-      };
+        reject(xr.error)
+      }
       xr.onload = function () {
-        resolve(xr.responseText);
-      };
-      xr.open('GET', url);
-      xr.setRequestHeader('Range', 'bytes=0-4096');
-      xr.send();
-    });
+        resolve(xr.responseText)
+      }
+      xr.open('GET', url)
+      xr.setRequestHeader('Range', 'bytes=0-4096')
+      xr.send()
+    })
   }
 
   function spanToString(span) {
-    const val = [];
+    const val = []
 
-    let tmp = Math.floor(span / 1000);
-    let k = 60 * 60 * 24;
-    const dd = Math.floor(tmp / k);
+    let tmp = Math.floor(span / 1000)
+    let k = 60 * 60 * 24
+    const dd = Math.floor(tmp / k)
     if (dd) {
-      val.push(`${dd} day(s)`);
+      val.push(`${dd} day(s)`)
     }
 
-    tmp -= dd * k;
-    k /= 24;
-    const hh = Math.floor(tmp / k);
+    tmp -= dd * k
+    k /= 24
+    const hh = Math.floor(tmp / k)
     if (hh) {
-      val.push(`${hh} hour(s)`);
+      val.push(`${hh} hour(s)`)
     }
 
-    tmp -= hh * k;
-    k /= 60;
-    const mm = Math.ceil(tmp / k);
+    tmp -= hh * k
+    k /= 60
+    const mm = Math.ceil(tmp / k)
     if (mm) {
-      val.push(`${mm} minute(s)`);
+      val.push(`${mm} minute(s)`)
     }
 
-    return val.join(', ');
+    return val.join(', ')
   }
 }
 
-run();
+run()
